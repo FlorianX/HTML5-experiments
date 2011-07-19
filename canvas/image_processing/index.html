@@ -43,6 +43,7 @@ function drawCanvas(){
 			context.drawImage(image,0,0);
 			// save the image data to the gloabel ImageData object
 			imgData = context.getImageData(0,0,image.width, image.height);
+			drawHistogram();
 		}
 
 	}else{
@@ -78,7 +79,9 @@ function doInvert(){
 		context.putImageData(newImgData, 0, 0);
 	}	
 }
-
+/*
+ * This function uses a median filter for noise reduction.
+ */
 function doReduction(){
 	// get the canvas
 	var canvas = document.getElementById('medianfilter');
@@ -129,6 +132,64 @@ function doReduction(){
 		context.putImageData(newImgData, 0, 0);
 	}
 }
+
+/*
+ * This function draws the histogram for the initial image.
+ */
+function drawHistogram(){
+	// histogram array
+	var hist = Array();
+	// max grey value
+	var max = 0;
+	
+	var i = 0;		
+	while(i < imgData.data.length){
+		// get the colors
+		var r = imgData.data[i++]; // R
+		var g = imgData.data[i++]; // G
+		var b = imgData.data[i++]; // B
+		var a = imgData.data[i++]; 	 // A
+		// calculate the grey value
+		var grey = parseInt( parseFloat("0.33") *( parseFloat(r) + parseFloat(g) + parseFloat(b)));
+		
+		// increase the value in the histogram on this position by 1
+		if(grey > -1 && grey < 256){
+			hist[grey]= (!hist[grey])? 1 : hist[grey] + 1;
+			// get the max value
+			if(max < hist[grey]) 
+				max = hist[grey];
+		}
+	}
+	
+	// get the canvas
+	var canvas = document.getElementById('histogram');
+	// check if canvas is supported
+	if (canvas.getContext){
+		// cleans the canvas
+		canvas.width = canvas.width;
+		// get the 2D context
+		var context = canvas.getContext('2d');
+		
+		// draw a rect as background
+		context.fillStyle = 'rgba(123,12,134,167)';
+		context.fillRect(0,0, canvas.width, canvas.height);
+		
+		// walk through the values and draw rectangles
+		for(var i = 0; i < 256; i++)
+		{
+			var value=0;
+			if(max > 0)
+				value=parseInt((100*parseFloat(hist[i])/parseFloat(max)));
+
+			context.fillStyle = 'rgb(' + i + ', ' + i + ', ' + i + ')';
+			context.fillRect(i,100-value,1,value);
+			context.fillRect(i,100,1,33);
+			context.fillRect(0,100,256,5);
+
+		}		
+	}	
+	
+}
 </script>
 </head>
 <body onload="drawCanvas();">
@@ -149,11 +210,14 @@ CSS only scales the image to fit the given size
 	<canvas id="medianfilter" width="215" height="215">
 		Your browser does not support this graphic.
 	</canvas>
+	<canvas id="histogram" width="256" height="100">
+		Your browser does not support this graphic.
+	</canvas>
 	<br>
 	<select id="file">
-		<option value="../images/test.png" selected>Smiley</option>
-		<option value="../images/Verrauscht1.jpg">Verrauscht1.jpg</option>
-		<option value="../images/Verrauscht2.jpg">Verrauscht2.jpg</option>
+		<option value="../images/test.png" selected>smiley</option>
+		<option value="../images/Verrauscht1.jpg">noisy 1</option>
+		<option value="../images/Verrauscht2.jpg">noisy 2</option>
 	</select>
 	<button onclick="doInvert();">invert</button>
 	<button onclick="doReduction();">median filter</button>
