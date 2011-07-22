@@ -1,8 +1,8 @@
 <!DOCTYPE html>
+<html>
 <head>
-<title>Canvas</title>
-<script type="text/javascript"
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<title>Canvas - Image Processing</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 
 <style type="text/css">
@@ -17,11 +17,11 @@
 	 margin-left: 60px;
 	}
 </style>
-<script type="text/javascript">
+<script>
 // create new image
 var image = new Image();
 // ImageData object from the initial image
-var imgData;
+var imageData;
 
 /* 
  * Onload method to draw the initial image in the frist canvas.
@@ -42,7 +42,7 @@ function drawCanvas(){
 			// drawing the loaded image
 			context.drawImage(image,0,0);
 			// save the image data to the gloabel ImageData object
-			imgData = context.getImageData(0,0,image.width, image.height);
+			imageData = context.getImageData(0,0,image.width, image.height);
 			drawHistogram();
 		}
 
@@ -65,18 +65,18 @@ function doInvert(){
 		var context = canvas.getContext('2d');
 
 		// create a new ImageData object
-		var newImgData = context.createImageData(imgData.width, imgData.height);
+		var newImageData = context.createImageData(imageData.width, imageData.height);
 		
 		var i = 0;		
-		while(i < imgData.data.length){
+		while(i < imageData.data.length){
 			// invert the colors
-			newImgData.data[i] = 255- imgData.data[i++]; // R
-			newImgData.data[i] = 255- imgData.data[i++]; // G
-			newImgData.data[i] = 255- imgData.data[i++]; // B
-			newImgData.data[i] = imgData.data[i++]; 	 // A
+			newImageData.data[i] = 255- imageData.data[i++]; // R
+			newImageData.data[i] = 255- imageData.data[i++]; // G
+			newImageData.data[i] = 255- imageData.data[i++]; // B
+			newImageData.data[i] = imageData.data[i++]; 	 // A
 		}
 		// draw the inverted image data to the second canvas
-		context.putImageData(newImgData, 0, 0);
+		context.putImageData(newImageData, 0, 0);
 	}	
 }
 /*
@@ -92,11 +92,11 @@ function doReduction(){
 		// get the 2D context
 		var context = canvas.getContext('2d');
 		// create a new ImageData object
-		var newImgData = context.createImageData(imgData.width, imgData.height);
+		var newImageData = context.createImageData(imageData.width, imageData.height);
 			
 		// move over the image data
-		for (var x = 0; x < imgData.width-3; x++) {
-			for (var y = 0; y < imgData.height-3; y++) {
+		for (var x = 0; x < imageData.width; x++) {
+			for (var y = 0; y < imageData.height; y++) {
 				// collection array for median filter
 				var P = new Array();
 				var count = 0;
@@ -105,12 +105,12 @@ function doReduction(){
 				for ( var u = 0; u < 3; u++) {
 		  			for ( var v = 0; v < 3; v++) {
 		  				// calculate the index of the sliding window
-		  				var windowIndex = ((x+u) + (y+v) * imgData.width) * 4;
+		  				var windowIndex = ((x+u) + (y+v) * imageData.width) * 4;
 		  				// get the color values
-			    		var r = imgData.data[windowIndex + 0]; // R
-			    		var g = imgData.data[windowIndex + 1]; // G
-			    		var b = imgData.data[windowIndex + 2]; // B
-			    		var a = imgData.data[windowIndex + 3]; // A
+			    		var r = imageData.data[windowIndex + 0]; // R
+			    		var g = imageData.data[windowIndex + 1]; // G
+			    		var b = imageData.data[windowIndex + 2]; // B
+			    		var a = imageData.data[windowIndex + 3]; // A
 			    		// calculate the grey value and save it to the prepaired array
 			    		P[count]=parseInt( parseFloat("0.33") *( parseFloat(r) + parseFloat(g) + parseFloat(b)));
 			    		count++;
@@ -119,17 +119,17 @@ function doReduction(){
 				// sorting the array
 				P.sort();
 				// calculate the index of the image 
-				var imageIndex = (x + y * imgData.width) * 4;
+				var imageIndex = (x + y * imageData.width) * 4;
 				// save the median to the single color positions
-				newImgData.data[imageIndex + 0] = parseInt(P[4]); // R
-				newImgData.data[imageIndex + 1] = parseInt(P[4]); // G
-				newImgData.data[imageIndex + 2] = parseInt(P[4]); // B
+				newImageData.data[imageIndex + 0] = parseInt(P[4]); // R
+				newImageData.data[imageIndex + 1] = parseInt(P[4]); // G
+				newImageData.data[imageIndex + 2] = parseInt(P[4]); // B
 				// set the original alpha
-				newImgData.data[imageIndex + 3] = imgData.data[imageIndex + 3]; // A 
+				newImageData.data[imageIndex + 3] = imageData.data[imageIndex + 3]; // A 
 			}
 		}
 		// draw the inverted image data to the second canvas
-		context.putImageData(newImgData, 0, 0);
+		context.putImageData(newImageData, 0, 0);
 	}
 }
 
@@ -143,12 +143,12 @@ function drawHistogram(){
 	var max = 0;
 	
 	var i = 0;		
-	while(i < imgData.data.length){
+	while(i < imageData.data.length){
 		// get the colors
-		var r = imgData.data[i++]; // R
-		var g = imgData.data[i++]; // G
-		var b = imgData.data[i++]; // B
-		var a = imgData.data[i++]; 	 // A
+		var r = imageData.data[i++]; // R
+		var g = imageData.data[i++]; // G
+		var b = imageData.data[i++]; // B
+		var a = imageData.data[i++]; 	 // A
 		// calculate the grey value
 		var grey = parseInt( parseFloat("0.33") *( parseFloat(r) + parseFloat(g) + parseFloat(b)));
 		
