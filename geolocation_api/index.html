@@ -66,115 +66,126 @@
 									.after(
 											'<form style="text-align:center;width:400px;">' +
 											'<input type="button" id="searchButton" value="Show me where i am!" onclick="findMe();">' +
+											'<br>' +
+											'<input type="button" id="watchButton" value="Watch me!" onclick="watchMe();">' +
 											'</form>');
 
 						});
+		// defining the success callback function
+		var successCallback = function(position) {
+			// get the latitude and longitude from the geolocation api
+			var myLatitude = position.coords.latitude;
+			var myLongitude = position.coords.longitude;
 
+			/* creating a new point with the location data 
+			 * of the user and set it to the map
+			 **/
+			var newPoint = new google.maps.LatLng(myLatitude, myLongitude)
+			map.setCenter(newPoint, 15);
+
+			// Needed to add the address in an infoWindow
+			if (geocoder) {
+				geocoder
+						.geocode(
+								{
+									'latLng' : newPoint
+								},
+								function(results, status) {
+									if (status == google.maps.GeocoderStatus.OK) {
+										if (results[1]) {
+											map.setZoom(15);
+											// creating a marker for the location
+											marker = new google.maps.Marker(
+													{
+														position : newPoint,
+														map : map
+													});
+
+											// insert the address data
+											infowindow
+													.setContent(results[0].formatted_address);
+											infowindow.open(map, marker);
+										}
+									} else {
+										alert("Geocoder failed due to: "
+												+ status);
+									}
+								});
+			}
+
+			// show all informations that have been collected by the browser
+			console.log(position);
+			
+			var msg = 'These are all the information your browser makes available:<hr>'
+					+ 'Timestamp: '
+					+ position.timestamp
+					+ '<br>'
+					+ 'latitude: '
+					+ position.coords.latitude
+					+ '<br>'
+					+ 'longitude: '
+					+ position.coords.longitude
+					+ '<br>'
+					+ 'altitude: '
+					+ position.coords.altitude
+					+ '<br>'
+					+ 'accuracy: '
+					+ position.coords.accuracy
+					+ '<br>'
+					+ 'altitude accuracy: '
+					+ position.coords.altitudeAccuracy
+					+ '<br>'
+					+ 'heading: '
+					+ position.coords.heading
+					+ '<br>'
+					+ 'speed : ' + position.coords.speed + '<br>'
+					+ '<br><hr>'
+					+ 'How does firefox (or an other browser) knows where you are?<br>'
+					+ 'This is called "Google Location Services".<br>'
+					+ 'More information here:<br>'
+					+ '<a title="more informations about the geolocation API from firefox" href="http://www.mozilla.com/en/firefox/geolocation/">http://www.mozilla.com/en/firefox/geolocation/</a>';
+
+			$('#msg').html(msg);
+		};
+		// defining the error callback
+		var errorCallback = function(error) {
+			switch (error.code) {
+			case error.TIMEOUT:
+				alert('The Google Location Service does not answer, sorry. Timeout!');
+				break;
+			case error.POSITION_UNAVAILABLE:
+				alert('Position unavailable');
+				break;
+			case error.PERMISSION_DENIED:
+				alert('Permission denied');
+				break;
+			default:
+				alert('Somethings wrong, sorry.');
+				break;
+			}
+		};
+		// defining some options for the geo api
+		var options = {
+			enableHighAccuracy : true, // super accuracy
+			timeout : 10000, // maximum waiting time
+			maximumAge : 0	// maximum acceptable cache age
+		};
+
+		var watchId=null;
+		function watchMe(){
+			$('#watchButton').replaceWith('<input type="button" id="stopWatchButton" value="Stop watching!" onclick="stopWatching();">');
+			watchId = navigator.geolocation.watchPosition(successCallback,
+					errorCallback, options);
+		}
+
+		function stopWatching(){
+			navigator.geolocation.clearWatch(watchId);
+		}
 		/*
-		 *	will be called when somebody clicks on the button
+		 *	will be called when somebody clicks on the searchButton
 		 *  
 		 **/
 		function findMe() {
-			// defining the success callback function
-			var successCallback = function(position) {
-				// get the latitude and longitude from the geolocation api
-				var myLatitude = position.coords.latitude;
-				var myLongitude = position.coords.longitude;
-
-				/* creating a new point with the location data 
-				 * of the user and set it to the map
-				 **/
-				var newPoint = new google.maps.LatLng(myLatitude, myLongitude)
-				map.setCenter(newPoint, 15);
-
-				// Needed to add the address in an infoWindow
-				if (geocoder) {
-					geocoder
-							.geocode(
-									{
-										'latLng' : newPoint
-									},
-									function(results, status) {
-										if (status == google.maps.GeocoderStatus.OK) {
-											if (results[1]) {
-												map.setZoom(15);
-												// creating a marker for the location
-												marker = new google.maps.Marker(
-														{
-															position : newPoint,
-															map : map
-														});
-
-												// insert the address data
-												infowindow
-														.setContent(results[0].formatted_address);
-												infowindow.open(map, marker);
-											}
-										} else {
-											alert("Geocoder failed due to: "
-													+ status);
-										}
-									});
-				}
-
-				// show all informations that have been collected by the browser
-				console.log(position);
-				
-				var msg = 'These are all the information your browser makes available:<hr>'
-						+ 'Timestamp: '
-						+ position.timestamp
-						+ '<br>'
-						+ 'latitude: '
-						+ position.coords.latitude
-						+ '<br>'
-						+ 'longitude: '
-						+ position.coords.longitude
-						+ '<br>'
-						+ 'altitude: '
-						+ position.coords.altitude
-						+ '<br>'
-						+ 'accuracy: '
-						+ position.coords.accuracy
-						+ '<br>'
-						+ 'altitude accuracy: '
-						+ position.coords.altitudeAccuracy
-						+ '<br>'
-						+ 'heading: '
-						+ position.coords.heading
-						+ '<br>'
-						+ 'speed : ' + position.coords.speed + '<br>'
-						+ '<br><hr>'
-						+ 'How does firefox (or an other browser) knows where you are?<br>'
-						+ 'This is called "Google Location Services".<br>'
-						+ 'More information here:<br>'
-						+ '<a title="more informations about the geolocation API from firefox" href="http://www.mozilla.com/en/firefox/geolocation/">http://www.mozilla.com/en/firefox/geolocation/</a>';
-
-				$('#msg').html(msg);
-			};
-			// defining the error callback
-			var errorCallback = function(error) {
-				switch (error.code) {
-				case error.TIMEOUT:
-					alert('The Google Location Service does not answer, sorry. Timeout!');
-					break;
-				case error.POSITION_UNAVAILABLE:
-					alert('Position unavailable');
-					break;
-				case error.PERMISSION_DENIED:
-					alert('Permission denied');
-					break;
-				default:
-					alert('Somethings wrong, sorry.');
-					break;
-				}
-			};
-			// defining some options for the geo api
-			var options = {
-				enableHighAccuracy : true, // super accuracy
-				timeout : 2000, // maximum waiting time
-				maximumAge : 0	// maximum acceptable cache age
-			};
-
 			// call the geolocation api
 			navigator.geolocation.getCurrentPosition(successCallback,
 					errorCallback, options);
