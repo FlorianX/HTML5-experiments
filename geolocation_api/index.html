@@ -37,7 +37,7 @@
 		var infowindow = new google.maps.InfoWindow();
 		var geocoder;
 		/* - initialize the google maps api with jQuery dom.ready
-		 * - initailize the map with the FHS buildung as
+		 * - initailize the map with the FHS building as
 		 *   default location
 		 **/
 		$(document)
@@ -64,7 +64,9 @@
 							//adding the button to search for the location
 							$('#map_canvas')
 									.after(
-											'<form style="text-align:center;width:400px;"><input type="button" id="searchButton" value="Show me where i am!" onclick="findMe();"></form>');
+											'<form style="text-align:center;width:400px;">' +
+											'<input type="button" id="searchButton" value="Show me where i am!" onclick="findMe();">' +
+											'</form>');
 
 						});
 
