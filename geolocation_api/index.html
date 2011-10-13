@@ -161,8 +161,8 @@
 				case error.PERMISSION_DENIED:
 					alert('Permission denied');
 					break;
-				case error.UNKNOWN_ERROR:
-					alert('Unknown error');
+				default:
+					alert('Somethings wrong, sorry.');
 					break;
 				}
 			};
