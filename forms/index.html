@@ -89,6 +89,7 @@ function calc(){
 	<option value="http://www.fh-schmalkalden.de/Masterstudium.html">Business and Economics</option>
 	<option value="http://www.fh-schmalkalden.de/en/Business+Law.html">Business Law</option>
 </datalist>
+
 <br><br>
 
 <h3>Keygen test:</h3>
@@ -97,6 +98,32 @@ function calc(){
 <input type="submit" />
 </form>
 
+<br><br>
+
+<h3>Placeholder and form attribute:</h3>
+<input type="text" id="outer" form="testForm" placeholder="Type something!"/>
+<form id="testForm" >
+	<input type="button" onclick="alert(this.form.elements.outer.value)"
+	value="Type and click!"/>
+</form>
+
+<br><br>
+
+<h3>Form overrides:</h3>
+<form id="formOverrides" action="normal.php" method="post">
+	<input type="email" name="mail" placeholder="Type in an email!" required/>
+	<input type="submit" value="sumbit to normal.php"/>
+	<input type="submit" value="sumbit to special.php" formaction="special.php"/>
+	<input type="submit" value="no validation!" formnovalidate="true"/>
+</form>
+
+<br><br>
+
+<h3>Pattern:</h3>
+<form>
+	<input id="a" type="text" pattern="[0-9]{2}.[0-9]{2}.[0-9]{4}" placeholder="DD.MM.YYY" required/>
+	<input type="submit" value="Check submitting"/>
+</form>
 
 </body>
 </html>
