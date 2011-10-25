@@ -111,15 +111,15 @@ function transSec(given)
  * if th document is ready, 
  */
 $(document).ready(function(){
-	// grab the video element
-	var vid = document.getElementById($('#choice').val());
+	// grab the video/audio element
+	var element = document.getElementById($('#choice').val());
 	$('#choice').change(function(){
-		vid = document.getElementById($(this).val());
+		element = document.getElementById($(this).val());
 		});
 
-	// get the video length and paste it, if the loadedmetadata event is fired 
-	$(vid).bind('loadedmetadata', function(){
-		$('#duration').html(transSec(vid.duration));
+	// get the video/audio length and paste it, if the loadedmetadata event is fired 
+	$(element).bind('loadedmetadata', function(){
+		$('#duration').html(transSec(element.duration));
 	});
 
 	/**
@@ -128,27 +128,27 @@ $(document).ready(function(){
 	 
 	$('#playButton').click(function(){
 		var interval;
-		if(vid.paused){ // check if the video is paused
-			vid.play(); // start the video
+		if(element.paused){ // check if the video/audio is paused
+			element.play(); // start the video/audio
 			$(this).html('stop!'); // change the text on the button
 			// create an interval to update the shown timestamp
 			interval = setInterval(function(){
-				$('#shown').html(transSec(vid.currentTime));
+				$('#shown').html(transSec(element.currentTime));
 			}, 1000);
 		}else{
 			clearInterval(interval); // cancel the Interval
-			vid.pause(); // paused the video
+			element.pause(); // paused the video/audio
 			$(this).html('play!'); // change the button text back
 		}
 	});
 
 	$('#muteButton').click(function(){
-		if(vid.muted){ // check if the video is muted
+		if(element.muted){ // check if the video/audio is muted
 			$(this).html('mute!'); // change the button text
-			vid.muted = false; // unmute the video
+			element.muted = false; // unmute the video/audio
 		}else{
 			$(this).html('unmute!'); // change the text again
-			vid.muted = true; // mute the video
+			element.muted = true; // mute the video/audio
 		}
 	});
 });
