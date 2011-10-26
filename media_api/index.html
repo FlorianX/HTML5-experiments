@@ -74,7 +74,7 @@ button:hover{
   <polygon fill="#FFFFFF" points="255.843,176.305 255.843,204.509 255.843,221.605 255.843,221.716 365.385,221.716 365.385,221.716 365.531,221.716 366.442,211.509 368.511,188.488 369.597,176.305"/>
 </svg>
 <div id="videoContainer">
-	<video width="400" height="225" id="video">
+	<video width="400" height="225" id="video" poster="../../res/images/bigbugbunny.jpg">
 		<source src="../../res/video.ogv" />
 	</video>
 	<div id="controlContainer">
@@ -112,7 +112,7 @@ function transSec(given)
  */
 $(document).ready(function(){
 	// grab the video/audio element
-	var element = document.getElementById($('#choice').val());
+	var element = $($('#choice').val()).get(0);
 	$('#choice').change(function(){
 		element = document.getElementById($(this).val());
 		});
