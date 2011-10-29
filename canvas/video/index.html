@@ -15,13 +15,13 @@
 				/*
 				 * no effect
 				 */
-				'none': function (data){
+				none: function (data){
 						return data;
 				},
 				/*
 				 * invert / ACID effect
 				 */
-				'invert': function (data){
+				invert: function (data){
 						var length = data.length;
 						var counter = 0;		
 						while(counter < length){
@@ -36,7 +36,7 @@
 				/*
 				 * grey scale
 				 */
-				'grey': function (data){
+				grey: function (data){
 						var length = data.length;
 						for (var i = 0;	i < length; i += 4){
 							// get the channels
@@ -58,7 +58,7 @@
 				/*
 				 * dynamic edge detection with 4 different matrices
 				 */
-				'edge_detection': function (data, width, height, matrix){
+				edge_detection: function (data, width, height, matrix){
 						var length = data.length;
 						var w = width;
 						var h = height;
@@ -86,25 +86,25 @@
 								}
 								// defining the matrix functions
 								var m ={
-										'0': function(P){
+										0: function(P){
 											// Roberts operator
 											// 1  0
 											// 0 -1
 											return (P[0] - P[3] + 255) / 2;	
 										},
-										'1': function(P){
+										1: function(P){
 											// simple horizontal operator
 											// 1 -1
 											// 1 -1
 											return (P[0] - P[1] + P[2] - P[3] + 510) / 4;
 										},
-										'2': function(P){
+										2: function(P){
 											// simple vertical operator
 											//  1  1
 											// -1 -1
 											return (P[0] + P[1] - P[2] - P[3] + 510) / 4;
 										},
-										'3': function(P){
+										3: function(P){
 											// Laplace operator
 											//  0  1  0
 											//  1 -4  1
